@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.com.alura";
+option java_outer_classname = "ChavePixGrpc";
+
+import "google/protobuf/timestamp.proto";
+
+package br.com.alura;
+
+service ChavePixServiceRegistra{
+  rpc registra(ChavePixRequest) returns (ChavePixResponse){}
+}
+
+service ChavePixServiceRemove{
+  rpc excluir(RemoverChavePixRequest) returns (RemoverChavePixResponse){}
+}
+
+service ChavePixServiceCarrega{
+  rpc carrega(CarregaChavePixRequest) returns (CarregaChavePixResponse){}
+}
+
+service ChavePixServiceListaChaveCliente{
+  rpc lista(ListaChaveClienteRequest) returns (ListaChaveClienteResponse){}
+}
+
+enum TipoChave{
+  UNKNOWM_CHAVE = 0;
+  CPF = 1;
+  PHONE = 2;
+  EMAIL = 3;
+  RANDOM = 4;
+  CNPJ = 5;
+}
+
+enum TipoConta{
+    UNKNOWM_CONTA = 0;
+    CONTA_CORRENTE = 1;
+    CONTA_POUPANCA = 2;
+}
+
+message ChavePixRequest{
+  string idCliente = 1;
+  TipoChave tipoChave = 2;
+  string valorChave = 3;
+  TipoConta tipoConta = 4;
+}
+
+message ChavePixResponse{
+  string idChave = 1;
+}
+
+message RemoverChavePixRequest{
+  string pixId = 1;
+  string isbp = 2;
+}
+
+message RemoverChavePixResponse{
+  string mensagem = 1;
+}
+
+message CarregaChavePixRequest{
+  message FiltroPorPixId{
+    string clienteId = 1;
+    string pixId = 2;
+  }
+
+  oneof filtro {
+    FiltroPorPixId pixId = 1;
+    string chave = 2;
+  }
+}
+
+message CarregaChavePixResponse{
+  message ChavePix {
+
+    message ContaInfo{
+      TipoConta tipoConta = 1;
+      string instituicao = 2;
+      string nomeDoTitular = 3;
+      string cpfDoTitular = 4;
+      string agencia = 5;
+      string numeroDaConta = 6;
+    }
+
+    TipoChave tipoChave = 1;
+    string chave = 2;
+    ContaInfo conta = 3;
+  }
+
+  string clienteId = 1;
+  string pixId = 2;
+  ChavePix chave = 3;
+}
+
+message ListaChaveClienteRequest{
+  string clientId = 1;
+}
+
+message ListaChaveClienteResponse{
+  message ChaveCliente{
+    string pixId = 1;
+    string clientId = 2;
+    TipoChave tipoChave = 3;
+    string valorChave = 4;
+    TipoConta tipoConta = 5;
+  }
+  repeated ChaveCliente chaves = 1;
+}
+

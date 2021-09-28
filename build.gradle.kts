@@ -25,16 +25,27 @@ micronaut {
 
 dependencies {
     kapt("io.micronaut:micronaut-http-validation")
+
+    implementation("io.micronaut.grpc:micronaut-grpc-client-runtime")
+
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-runtime")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
+
     implementation("javax.annotation:javax.annotation-api")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
+
     implementation("io.micronaut:micronaut-validation")
 
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+    implementation("io.micronaut:micronaut-http-client")
 
 }
 
