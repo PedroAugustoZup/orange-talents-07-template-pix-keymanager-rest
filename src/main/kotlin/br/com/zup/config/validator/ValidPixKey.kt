@@ -1,11 +1,12 @@
-package br.com.zup.confid.validator
+package br.com.zup.config.validator
 
 import br.com.zup.dto.TipoDeChave
 import br.com.zup.dto.request.NovaChaveRequest
+import io.micronaut.core.annotation.AnnotationValue
+import io.micronaut.validation.validator.constraints.ConstraintValidator
+import io.micronaut.validation.validator.constraints.ConstraintValidatorContext
 import jakarta.inject.Singleton
 import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
 import kotlin.reflect.KClass
 
 @MustBeDocumented
@@ -20,7 +21,12 @@ annotation class ValidPixKey(
 
 @Singleton
 class ValidPixKeyClass: ConstraintValidator<ValidPixKey, NovaChaveRequest> {
-    override fun isValid(value: NovaChaveRequest?, context: ConstraintValidatorContext?): Boolean {
+
+    override fun isValid(
+        value: NovaChaveRequest?,
+        annotationMetadata: AnnotationValue<ValidPixKey>,
+        context: ConstraintValidatorContext
+    ): Boolean {
         return value?.valor?.let { key ->
             value.tipoChave?.validaKey(key)
         } ?: true

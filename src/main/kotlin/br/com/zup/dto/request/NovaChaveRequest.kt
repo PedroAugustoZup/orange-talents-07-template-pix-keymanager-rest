@@ -1,6 +1,6 @@
 package br.com.zup.dto.request
 
-import br.com.zup.confid.validator.ValidPixKey
+import br.com.zup.config.validator.ValidPixKey
 import br.com.zup.dto.TipoDeChave
 import br.com.zup.dto.TipoDeConta
 import io.micronaut.core.annotation.Introspected

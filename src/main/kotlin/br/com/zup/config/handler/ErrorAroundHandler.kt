@@ -1,4 +1,4 @@
-package br.com.alura.config.handler
+package br.com.zup.config.handler
 
 import io.micronaut.aop.Around
 import kotlin.annotation.AnnotationRetention.RUNTIME

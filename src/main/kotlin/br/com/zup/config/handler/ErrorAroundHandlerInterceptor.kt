@@ -1,4 +1,4 @@
-package br.com.alura.config.handler
+package br.com.zup.config.handler
 
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -14,11 +14,10 @@ import javax.validation.ValidationException
 class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
 
     override fun intercept(context: MethodInvocationContext<Any, Any>): Any? {
-        return try {
-           context.proceed()
+        try {
+           return context.proceed()
         } catch (ex: Exception) {
-
-            if(ex is StatusRuntimeException){
+            return if(ex is StatusRuntimeException){
                 when(ex.status.code){
                     Status.INVALID_ARGUMENT.code -> HttpResponse.badRequest(ex.message)
                     Status.ALREADY_EXISTS.code -> HttpResponse.badRequest(ex.message)
@@ -26,12 +25,13 @@ class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
                 }
             }else{
                 when(ex){
-                    is IllegalArgumentException -> HttpResponse.badRequest(ex.message)
+                    is IllegalArgumentException -> HttpResponse.serverError(ex.message)
                     is ValidationException -> HttpResponse.badRequest(ex.message)
                     else -> HttpResponse.serverError("Erro inesperado")
                 }
             }
         }
+        return null
     }
 
 }
