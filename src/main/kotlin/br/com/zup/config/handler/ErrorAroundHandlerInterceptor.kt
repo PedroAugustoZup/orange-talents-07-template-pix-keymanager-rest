@@ -20,7 +20,8 @@ class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
             return if(ex is StatusRuntimeException){
                 when(ex.status.code){
                     Status.INVALID_ARGUMENT.code -> HttpResponse.badRequest(ex.message)
-                    Status.ALREADY_EXISTS.code -> HttpResponse.badRequest(ex.message)
+                    Status.NOT_FOUND.code -> HttpResponse.notFound(ex.message)
+                    Status.ALREADY_EXISTS.code -> HttpResponse.unprocessableEntity<String?>().body(ex.message)
                     else -> HttpResponse.serverError("Erro inesperado")
                 }
             }else{
