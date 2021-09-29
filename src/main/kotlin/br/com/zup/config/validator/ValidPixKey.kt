@@ -51,7 +51,5 @@ fun TipoDeChave.validaKey(key: String): Boolean {
         TipoDeChave.RANDOM -> {
             return key.isEmpty()
         }
-
-        else -> return false
     }
 }

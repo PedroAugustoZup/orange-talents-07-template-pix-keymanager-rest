@@ -32,7 +32,6 @@ class ErrorAroundHandlerInterceptor : MethodInterceptor<Any, Any> {
                 }
             }
         }
-        return null
     }
 
 }

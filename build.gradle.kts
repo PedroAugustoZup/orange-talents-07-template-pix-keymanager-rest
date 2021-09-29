@@ -47,6 +47,7 @@ dependencies {
 
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+    testImplementation("org.mockito:mockito-inline:3.8.0")
     implementation("io.micronaut:micronaut-http-client")
 
 }

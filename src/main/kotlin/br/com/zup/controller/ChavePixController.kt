@@ -1,6 +1,6 @@
 package br.com.zup.controller
 
-import br.com.alura.ChavePixServiceRegistraGrpc
+import br.com.zup.ChavePixServiceRegistraGrpc
 import br.com.zup.config.handler.ErrorAroundHandler
 import br.com.zup.dto.request.NovaChaveRequest
 import io.micronaut.http.HttpResponse

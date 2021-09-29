@@ -1,8 +1,8 @@
 package br.com.zup.dto.request
 
-import br.com.alura.ChavePixRequest
-import br.com.alura.TipoChave
-import br.com.alura.TipoConta
+import br.com.zup.ChavePixRequest
+import br.com.zup.TipoChave
+import br.com.zup.TipoConta
 import br.com.zup.config.validator.ValidPixKey
 import br.com.zup.dto.TipoDeChave
 import br.com.zup.dto.TipoDeConta
@@ -30,12 +30,12 @@ data class NovaChaveRequest(
                 TipoDeChave.CNPJ -> TipoChave.CNPJ
                 TipoDeChave.EMAIL -> TipoChave.EMAIL
                 TipoDeChave.PHONE -> TipoChave.PHONE
-                else -> TipoChave.RANDOM
+                TipoDeChave.RANDOM -> TipoChave.RANDOM
             })
             .setValorChave(valor)
             .setTipoConta(when(tipoConta){
                 TipoDeConta.CONTA_CORRENTE -> TipoConta.CONTA_CORRENTE
-                else -> TipoConta.CONTA_POUPANCA
+                TipoDeConta.CONTA_POUPANCA -> TipoConta.CONTA_POUPANCA
             })
             .build()
     }
