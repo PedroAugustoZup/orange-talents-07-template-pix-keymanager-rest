@@ -6,7 +6,7 @@ option java_outer_classname = "ChavePixGrpc";
 
 import "google/protobuf/timestamp.proto";
 
-package br.com.zup;
+package br.com.alura;
 
 service ChavePixServiceRegistra{
   rpc registra(ChavePixRequest) returns (ChavePixResponse){}

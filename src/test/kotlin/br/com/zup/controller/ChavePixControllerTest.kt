@@ -4,6 +4,7 @@ import br.com.zup.*
 import br.com.zup.dto.TipoDeChave
 import br.com.zup.dto.TipoDeConta
 import br.com.zup.dto.request.NovaChaveRequest
+import br.com.zup.dto.request.RemoveChaveRequest
 import br.com.zup.factory.KeyManagerFactory
 import io.grpc.Status
 import io.micronaut.context.annotation.Factory
@@ -28,7 +29,10 @@ import java.util.*
 internal class ChavePixControllerTest {
 
     @field:Inject
-    lateinit var grpcClient: ChavePixServiceRegistraGrpc.ChavePixServiceRegistraBlockingStub
+    lateinit var grpcClientRegistra: ChavePixServiceRegistraGrpc.ChavePixServiceRegistraBlockingStub
+
+    @field:Inject
+    lateinit var grpcClientRemove: ChavePixServiceRemoveGrpc.ChavePixServiceRemoveBlockingStub
 
     @field:Inject
     @field:Client("/")
@@ -43,7 +47,7 @@ internal class ChavePixControllerTest {
     @Test
     fun `deve retornar o ok de chave cadastrada`() {
 
-        Mockito.`when`(grpcClient.registra(
+        Mockito.`when`(grpcClientRegistra.registra(
             ChavePixRequest.newBuilder()
             .setValorChave("14331247648")
             .setTipoConta(TipoConta.CONTA_CORRENTE)
@@ -69,7 +73,7 @@ internal class ChavePixControllerTest {
 
     @Test
     fun `deve dar erro ao cadastrar uma chave já existente`(){
-        Mockito.`when`(grpcClient.registra(
+        Mockito.`when`(grpcClientRegistra.registra(
             ChavePixRequest.newBuilder()
                 .setValorChave("14331247648")
                 .setTipoConta(TipoConta.CONTA_CORRENTE)
@@ -98,7 +102,7 @@ internal class ChavePixControllerTest {
 
     @Test
     fun `deve dar erro ao cadastrar uma chave com argumentos invalidos`(){
-        Mockito.`when`(grpcClient.registra(
+        Mockito.`when`(grpcClientRegistra.registra(
             ChavePixRequest.newBuilder()
                 .setValorChave("14331247648")
                 .setTipoConta(TipoConta.CONTA_CORRENTE)
@@ -126,13 +130,29 @@ internal class ChavePixControllerTest {
     }
 
     @Test
-    fun `testando com outros tipos de chave`(){
+    fun `deve excluir a chave pix`(){
+        Mockito.`when`(grpcClientRemove.excluir(RemoverChavePixRequest.newBuilder()
+            .setPixId("78394589634").setIsbp("60701190")
+            .build()))
+            .thenReturn(
+                RemoverChavePixResponse
+                .newBuilder().setMensagem("Chave removida com sucesso").build())
 
+        val httpRequest = HttpRequest.DELETE("pix", RemoveChaveRequest(
+            "78394589634",
+            "60701190"
+        ))
+        val response = httpClient.toBlocking().exchange(httpRequest, HttpResponse::class.java)
+
+        assertEquals(HttpStatus.OK, response.status)
     }
     @Factory
     @Replaces(factory = KeyManagerFactory::class)
     internal class MockitoFactory {
         @Singleton
         fun stubMock() = Mockito.mock(ChavePixServiceRegistraGrpc.ChavePixServiceRegistraBlockingStub::class.java)
+
+        @Singleton
+        fun clientRemove() = Mockito.mock(ChavePixServiceRemoveGrpc.ChavePixServiceRemoveBlockingStub::class.java)
     }
 }
