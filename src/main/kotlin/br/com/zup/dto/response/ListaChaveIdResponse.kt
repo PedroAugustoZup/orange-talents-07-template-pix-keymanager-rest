@@ -1,5 +1,7 @@
 package br.com.zup.dto.response
 
-class ListaChaveIdResponse {
-
-}
+data class ListaChaveIdResponse(
+    val clientId: String,
+    val pixId: String,
+    val chave: ChavePixResponse
+)

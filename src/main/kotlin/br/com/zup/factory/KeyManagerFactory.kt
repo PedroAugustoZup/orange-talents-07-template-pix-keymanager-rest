@@ -1,6 +1,7 @@
 package br.com.zup.factory
 
 import br.com.zup.ChavePixServiceCarregaGrpc
+import br.com.zup.ChavePixServiceListaChaveClienteGrpc
 import br.com.zup.ChavePixServiceRegistraGrpc
 import br.com.zup.ChavePixServiceRemoveGrpc
 import io.grpc.ManagedChannel
@@ -24,5 +25,10 @@ class KeyManagerFactory {
     @Singleton
     fun detalhaChave(@GrpcChannel("keyManager") channel: ManagedChannel): ChavePixServiceCarregaGrpc.ChavePixServiceCarregaBlockingStub{
         return ChavePixServiceCarregaGrpc.newBlockingStub(channel)
+    }
+
+    @Singleton
+    fun detalhaChavePorCliente(@GrpcChannel("keyManager") channel: ManagedChannel): ChavePixServiceListaChaveClienteGrpc.ChavePixServiceListaChaveClienteBlockingStub{
+        return ChavePixServiceListaChaveClienteGrpc.newBlockingStub(channel)
     }
 }
