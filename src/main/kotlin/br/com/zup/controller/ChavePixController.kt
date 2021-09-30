@@ -4,7 +4,6 @@ import br.com.zup.*
 import br.com.zup.config.handler.ErrorAroundHandler
 import br.com.zup.dto.TipoDeChave
 import br.com.zup.dto.TipoDeConta
-import br.com.zup.dto.request.ListaChaveIdRequest
 import br.com.zup.dto.request.NovaChaveRequest
 import br.com.zup.dto.request.RemoveChaveRequest
 import br.com.zup.dto.response.ChaveCLienteResponse
@@ -39,18 +38,18 @@ class ChavePixController(
     }
 
     @Get
-    fun detalhaChavePorId(@Body @Valid request: ListaChaveIdRequest): HttpResponse<Any>{
-        val response = grpcClientCarrega.carrega(request.toGrpc())
+    fun detalhaChavePorId(@QueryValue("clientId") clientId: String, @QueryValue("pixId") pixId: String): HttpResponse<Any>{
+        val filtroPorPixId = CarregaChavePixRequest.FiltroPorPixId.newBuilder()
+            .setPixId(pixId)
+            .setClienteId(clientId)
+            .build()
+        val grpcRequest = CarregaChavePixRequest.newBuilder()
+            .setPixId(filtroPorPixId)
+            .build()
+        val response = grpcClientCarrega.carrega(grpcRequest)
         val responseDto = response.toDto()
         return HttpResponse.ok(responseDto)
-    }
 
-    @Get("?{chave}")
-    fun detalhaChavePorValor(@QueryValue("chave") chave: String): HttpResponse<Any>{
-        val response = grpcClientCarrega.carrega(CarregaChavePixRequest.newBuilder()
-            .setChave(chave).build())
-        val responseDto = response.toDto()
-        return HttpResponse.ok(responseDto)
     }
 
     @Get("/cliente/{id}")
