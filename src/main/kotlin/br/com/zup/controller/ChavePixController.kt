@@ -7,6 +7,7 @@ import br.com.zup.dto.TipoDeConta
 import br.com.zup.dto.request.ListaChaveIdRequest
 import br.com.zup.dto.request.NovaChaveRequest
 import br.com.zup.dto.request.RemoveChaveRequest
+import br.com.zup.dto.response.ChaveCLienteResponse
 import br.com.zup.dto.response.ChavePixResponse
 import br.com.zup.dto.response.ContaResponse
 import br.com.zup.dto.response.ListaChaveIdResponse
@@ -57,10 +58,24 @@ class ChavePixController(
         val response = grpcClientListaPorCliente.lista(ListaChaveClienteRequest.newBuilder()
             .setClientId(idCliente)
             .build())
-
         return HttpResponse.ok(response.toDto())
     }
 
+}
+
+private fun ListaChaveClienteResponse.toDto(): List<ChaveCLienteResponse> {
+    return chavesList.map{ChaveCLienteResponse(it.pixId, it.clientId, when(it.tipoChave){
+        TipoChave.CNPJ -> TipoDeChave.CNPJ
+        TipoChave.CPF -> TipoDeChave.CPF
+        TipoChave.EMAIL -> TipoDeChave.EMAIL
+        TipoChave.PHONE -> TipoDeChave.PHONE
+        TipoChave.RANDOM -> TipoDeChave.RANDOM
+        else -> TipoDeChave.RANDOM
+    }, it.valorChave, when(it.tipoConta){
+        TipoConta.CONTA_POUPANCA -> TipoDeConta.CONTA_POUPANCA
+        TipoConta.CONTA_CORRENTE -> TipoDeConta.CONTA_CORRENTE
+        else -> TipoDeConta.CONTA_POUPANCA
+    })}
 }
 
 private fun CarregaChavePixResponse.toDto(): ListaChaveIdResponse? {
