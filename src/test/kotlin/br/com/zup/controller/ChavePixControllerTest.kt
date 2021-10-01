@@ -5,6 +5,7 @@ import br.com.zup.dto.TipoDeChave
 import br.com.zup.dto.TipoDeConta
 import br.com.zup.dto.request.NovaChaveRequest
 import br.com.zup.dto.request.RemoveChaveRequest
+import br.com.zup.dto.response.ListaChaveIdResponse
 import br.com.zup.factory.KeyManagerFactory
 import io.grpc.Status
 import io.micronaut.context.annotation.Factory
@@ -33,6 +34,12 @@ internal class ChavePixControllerTest {
 
     @field:Inject
     lateinit var grpcClientRemove: ChavePixServiceRemoveGrpc.ChavePixServiceRemoveBlockingStub
+
+    @field:Inject
+    lateinit var grpcClientCarrega: ChavePixServiceCarregaGrpc.ChavePixServiceCarregaBlockingStub
+
+    @field:Inject
+    lateinit var grpcClientLista: ChavePixServiceListaChaveClienteGrpc.ChavePixServiceListaChaveClienteBlockingStub
 
     @field:Inject
     @field:Client("/")
@@ -146,6 +153,58 @@ internal class ChavePixControllerTest {
 
         assertEquals(HttpStatus.OK, response.status)
     }
+
+    @Test
+    fun `deve listar uma chave específica`(){
+
+        val filtroPorPixId = CarregaChavePixRequest.FiltroPorPixId.newBuilder()
+            .setPixId("1").setClienteId(id).build()
+
+        val contaInfo = CarregaChavePixResponse.ChavePix.ContaInfo.newBuilder()
+            .setTipoConta(TipoConta.CONTA_CORRENTE)
+            .setInstituicao("Itau")
+            .setNomeDoTitular("Pedro")
+            .setCpfDoTitular("78394589634")
+            .setAgencia("213213")
+            .setNumeroDaConta("1231321").build()
+        val chavePix = CarregaChavePixResponse.ChavePix.newBuilder()
+            .setConta(contaInfo)
+            .setTipoChave(TipoChave.CPF)
+            .setChave("78394589634").build()
+
+        Mockito.`when`(grpcClientCarrega.carrega(CarregaChavePixRequest.newBuilder()
+            .setPixId(filtroPorPixId)
+            .build())).thenReturn(CarregaChavePixResponse.newBuilder()
+            .setChave(chavePix)
+            .setPixId("1")
+            .setClienteId(id).build())
+
+        val httpRequest = HttpRequest.GET<Any>("pix?clientId=$id&pixId=1")
+        val response = httpClient.toBlocking().exchange(httpRequest, ListaChaveIdResponse::class.java)
+
+        assertEquals(HttpStatus.OK, response.status)
+        assertEquals("78394589634", response.body().chave.valorChave)
+
+    }
+
+    @Test
+    fun `deve listar uma chave de cliente específico`(){
+        val chaveCliente = ListaChaveClienteResponse.ChaveCliente.newBuilder()
+            .setPixId("1")
+            .setClientId(id)
+            .setTipoChave(TipoChave.CPF)
+            .setValorChave("78394589634")
+            .setTipoConta(TipoConta.CONTA_CORRENTE).build()
+        Mockito.`when`(grpcClientLista.lista(ListaChaveClienteRequest.newBuilder().setClientId(id).build()))
+            .thenReturn(ListaChaveClienteResponse.newBuilder().addAllChaves(listOf(chaveCliente)).build())
+
+        val httpRequest = HttpRequest.GET<Any>("pix/cliente/$id")
+        val response = httpClient.toBlocking().exchange(httpRequest, Any::class.java)
+
+        val cast = response.body() as ArrayList<LinkedHashMap<String, Any>>
+        assertEquals(HttpStatus.OK, response.status)
+        assertEquals("78394589634", cast[0]["valorChave"])
+    }
     @Factory
     @Replaces(factory = KeyManagerFactory::class)
     internal class MockitoFactory {
@@ -154,5 +213,11 @@ internal class ChavePixControllerTest {
 
         @Singleton
         fun clientRemove() = Mockito.mock(ChavePixServiceRemoveGrpc.ChavePixServiceRemoveBlockingStub::class.java)
+
+        @Singleton
+        fun detalhaChave() = Mockito.mock(ChavePixServiceCarregaGrpc.ChavePixServiceCarregaBlockingStub::class.java)
+
+        @Singleton
+        fun detalhaChavePorCliente() = Mockito.mock(ChavePixServiceListaChaveClienteGrpc.ChavePixServiceListaChaveClienteBlockingStub::class.java)
     }
 }
