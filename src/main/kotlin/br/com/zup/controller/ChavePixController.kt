@@ -49,7 +49,6 @@ class ChavePixController(
         val response = grpcClientCarrega.carrega(grpcRequest)
         val responseDto = response.toDto()
         return HttpResponse.ok(responseDto)
-
     }
 
     @Get("/cliente/{id}")
@@ -59,7 +58,6 @@ class ChavePixController(
             .build())
         return HttpResponse.ok(response.toDto())
     }
-
 }
 
 private fun ListaChaveClienteResponse.toDto(): List<ChaveCLienteResponse> {
